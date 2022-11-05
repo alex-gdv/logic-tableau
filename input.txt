@@ -1,0 +1,3 @@
+PARSE
+(pv(q>r))
+((pvq)^(-pv-q))

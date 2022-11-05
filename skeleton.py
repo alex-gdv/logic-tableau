@@ -1,12 +1,21 @@
 #No import statements.
 
 MAX_CONSTANTS = 10
-
+PROP = ["q", "r", "p", "s"]
+CON = ["^", "v", ">"]
 
 
 # Parse a formula, consult parseOutputs for return values.
 def parse(fmla):
-    return 0
+    output = 0
+    print(fmla)
+    for i in range(len(fmla)):
+        if fmla[i] in CON:
+            x = fmla[1:i]
+            y = fmla[i+1:-1]
+            if x in PROP and y in PROP:
+                output = 6
+    return output
 
 # Return the LHS of a binary connective formula
 def lhs(fmla):

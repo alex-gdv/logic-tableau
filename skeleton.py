@@ -4,22 +4,46 @@ MAX_CONSTANTS = 10
 PROP = ["q", "r", "p", "s"]
 CON = ["^", "v", ">"]
 
+def split_main_con(fmla):
+    brackets = 0
+    for i in range(len(fmla)):
+        if fmla[i] == "(":
+            brackets+=1
+        elif fmla[i] == ")":
+            brackets-=1
+        if fmla[i] in CON and brackets == 1:
+            _lhs = fmla[1:i]
+            _rhs = fmla[i+1:-1]
+            _con = fmla[i]
+    return [_lhs, _con, _rhs]
 
 # Parse a formula, consult parseOutputs for return values.
 def parse(fmla):
+    negation = False
+    if fmla[0] == "-":
+        negation = True
+        fmla = fmla[1:]
+    if fmla in PROP and negation:
+        return 7
+    elif fmla in PROP:
+        return 6
     output = 0
-    print(fmla)
+    brackets = 0
     for i in range(len(fmla)):
-        brackets = 0
         if fmla[i] == "(":
             brackets+=1
-        else if fmla[i] == ")":
+        elif fmla[i] == ")":
             brackets-=1
         if fmla[i] in CON and brackets == 1:
-            x = fmla[1:i]
-            y = fmla[i+1:-1]
-            if x in PROP and y in PROP:
-                output = 6
+            lhs = fmla[1:i]
+            rhs = fmla[i+1:-1]
+            output_lhs = parse(lhs)
+            output_rhs = parse(rhs)
+            nums = [6,7,8]
+            if output_lhs in nums and output_rhs in nums:
+                output = 8
+    if output != 0 and negation:
+        output = 7
     return output
 
 # Return the LHS of a binary connective formula
@@ -37,6 +61,15 @@ def rhs(fmla):
 
 # You may choose to represent a theory as a set or a list
 def theory(fmla):#initialise a theory with a single formula in it
+    lst = [fmla]
+    while True:
+        temp = split_main_con(lst[-1])
+        if temp[1] == "^":
+            pass
+        elif temp[1] == "v":
+            pass
+        else:
+            pass
     return None
 
 #check for satisfiability

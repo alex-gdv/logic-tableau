@@ -10,7 +10,12 @@ def parse(fmla):
     output = 0
     print(fmla)
     for i in range(len(fmla)):
-        if fmla[i] in CON:
+        brackets = 0
+        if fmla[i] == "(":
+            brackets+=1
+        else if fmla[i] == ")":
+            brackets-=1
+        if fmla[i] in CON and brackets == 1:
             x = fmla[1:i]
             y = fmla[i+1:-1]
             if x in PROP and y in PROP:

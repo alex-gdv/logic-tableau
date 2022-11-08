@@ -5,6 +5,13 @@ PROP = ["q", "r", "p", "s"]
 CON = ["^", "v", ">"]
 
 def split_main_con(fmla):
+    _neg = False    
+    if fmla[0] == "-" and fmla[1] == "-":
+        _neg = False
+        fmla = fmla[2:]
+    if fmla[0] == "-":
+        _neg = True
+        fmla = fmla[1:]
     brackets = 0
     for i in range(len(fmla)):
         if fmla[i] == "(":
@@ -15,7 +22,11 @@ def split_main_con(fmla):
             _lhs = fmla[1:i]
             _rhs = fmla[i+1:-1]
             _con = fmla[i]
-    return [_lhs, _con, _rhs]
+        elif fmla[i] in PROP and brackets == 0:
+            _lhs = fmla[i]
+            _rhs = None
+            _con = None
+    return [_neg, _lhs, _con, _rhs]
 
 # Parse a formula, consult parseOutputs for return values.
 def parse(fmla):
@@ -58,18 +69,48 @@ def con(fmla):
 def rhs(fmla):
     return ''
 
+def add_neg(fmla):
+    return "-" + fmla
+
+def is_contradictory(lst):
+    for elem in lst:
+        if elem in PROP:
+            neg_elem = add_neg(elem)
+            if neg_elem in lst:
+                return True
+    return False
 
 # You may choose to represent a theory as a set or a list
 def theory(fmla):#initialise a theory with a single formula in it
-    lst = [fmla]
-    while True:
-        temp = split_main_con(lst[-1])
-        if temp[1] == "^":
+    tab = [[fmla]]
+    branch_index = 0
+    elem_index = 0
+    while len(tab) != 0:
+        neg, lhs, con, rhs = split_main_con(tab[branch_index][elem_index])
+        if False:
             pass
-        elif temp[1] == "v":
-            pass
-        else:
-            pass
+        else:#alpha
+            if not neg and con == "^":
+                tab[branch_index].append(lhs)
+                tab[branch_index].append(rhs)
+            elif neg and con == "v":
+                tab[branch_index].append(add_neg(lhs))
+                tab[branch_index].append(add_neg(rhs))
+            elif neg and con == ">":
+                tab[branch_index].append(lhs)
+                tab[branch_index].append(add_neg(rhs))
+            elif not neg and con is None:
+                tab[branch_index].append(lhs)
+            # beta
+            if not neg and con == "v":
+                tab[branch_index].append(lhs)
+                tab.append([rhs])
+            elif not neg and con == ">":
+                tab[branch_index].append(add_neg(lhs))
+                tab.append([rhs])
+            elif neg and con == "^":
+                tab[branch_index].append(add_neg(lhs))
+                tab.append([add_neg(rhs)])
     return None
 
 #check for satisfiability
